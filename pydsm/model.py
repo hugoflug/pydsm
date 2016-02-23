@@ -391,6 +391,32 @@ class RandomIndexing(DSM):
                          config=config)
 
     @timeit
+    def nearest_index_neighbors(self, arg, sim_func=similarity.cos):
+        """
+        Find the nearest neighbors given arg.
+        :param arg: Either a string or an IndexMatrix.
+                    If index matrix, return nearest neighbors to all row vectors of the matrix.
+        :param sim_func: The similarity function to use for proximity calculation.
+        """
+
+        vec = None
+
+        if isinstance(arg, IndexMatrix):
+            vec = arg
+        else:
+            vec = self[arg]
+
+        scores = []
+        for row in vec:
+            scores.append(sim_func(self.index_vectors, row).sort(key='sum', axis=0, ascending=False))
+
+        res = scores[0]
+        for i in scores[1:]:
+            res = res.append(i, axis=1)
+        return res
+
+
+    @timeit
     def build(self, text):
 
         """
