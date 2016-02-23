@@ -30,6 +30,7 @@ def build(model,
 
     Returns: A DSM.
     """
+
     if config is None:
       config = {}
     config = dict(config, **kwargs)

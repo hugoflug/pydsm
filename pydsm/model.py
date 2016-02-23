@@ -392,6 +392,7 @@ class RandomIndexing(DSM):
 
     @timeit
     def build(self, text):
+
         """
         Builds the co-occurrence dict from text.
         The columns are encoded from 0 to dimensionality-1.
@@ -400,6 +401,7 @@ class RandomIndexing(DSM):
         colfreqs = defaultdict(lambda: defaultdict(int))
 
         # Stores the vocabulary with frequency
+        dense_index_vectors = dict()
         index_vectors = dict()
         for focus, contexts in text:
             for context in contexts:
@@ -416,6 +418,10 @@ class RandomIndexing(DSM):
                         index_vector.add(-1 * np.random.random_integers(0, self.config['dimensionality'] - 1))
                     index_vectors[context] = index_vector
 
+                    dense_index_vectors[context] = defaultdict(lambda: defaultdict(int))
+                    for j in index_vector:
+                        dense_index_vectors[context][abs(j)] = math.copysign(1, j)
+
                 # add 1 to each context. addition or subtraction is decided by the sign of the index.
                 for j in index_vectors[context]:
                     colfreqs[focus][abs(j)] += math.copysign(1, j)
@@ -426,5 +432,7 @@ class RandomIndexing(DSM):
                 if i not in vector:
                     vector[i] = 0
             break
+
+        self.index_vectors = IndexMatrix(dense_index_vectors)
 
         return colfreqs
