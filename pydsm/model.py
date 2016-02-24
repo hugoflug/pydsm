@@ -5,6 +5,8 @@ import math
 import abc
 import bz2
 import hashlib
+import scipy.spatial.distance as dist
+import scipy.sparse as sp
 
 import numpy as np
 
@@ -405,6 +407,12 @@ class RandomIndexing(DSM):
             vec = arg
         else:
             vec = self[arg]
+
+
+        #anded_matrix = np.apply_along_axis(lambda x: x * np.logical_and(x, vec), 1, self.index_vectors.matrix.toarray())
+        #print(type(anded_matrix))
+
+        #imatrix = IndexMatrix(sp.csr_matrix(anded_matrix), row2word = [], col2word = [])
 
         scores = []
         for row in vec:
