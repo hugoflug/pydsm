@@ -399,7 +399,7 @@ class RandomIndexing(DSM):
                          config=config)
 
     @timeit
-    def nearest_index_neighbors(self, arg, sim_func=similarity.cos):
+    def nearest_index_neighbors(self, arg):
         """
         Find the nearest neighbors given arg.
         :param arg: Either a string or an IndexMatrix.
