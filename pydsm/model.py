@@ -401,10 +401,9 @@ class RandomIndexing(DSM):
     @timeit
     def nearest_index_neighbors(self, arg):
         """
-        Find the nearest neighbors given arg.
+        Find the nearest syntagmatic (index) neighbors given arg.
         :param arg: Either a string or an IndexMatrix.
                     If index matrix, return nearest neighbors to all row vectors of the matrix.
-        :param sim_func: The similarity function to use for proximity calculation.
         """
 
         vec = None
