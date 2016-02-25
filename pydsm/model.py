@@ -424,8 +424,8 @@ class RandomIndexing(DSM):
         # compare 'and'ed index vectors to unchanged index ector
         dists = []
         for i, (anded_index, index_vector) in enumerate(zip(anded_indexes_im, self.index_vectors)):
-            dists.append((dist.cosine(anded_index.matrix.toarray()[0,:], index_vector.matrix.toarray()[0,:]), anded_indexes_im.row2word[i]))
-        dists.sort()
+            dists.append((1 - dist.cosine(anded_index.matrix.toarray()[0,:], index_vector.matrix.toarray()[0,:]), anded_indexes_im.row2word[i]))
+        dists.sort(reverse=True)
 
         return dists
 
