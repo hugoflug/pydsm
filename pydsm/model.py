@@ -227,6 +227,12 @@ class DSM(metaclass=abc.ABCMeta):
             res = res.append(i, axis=1)
         return res
 
+    def build_graph(self):
+        pass
+        # go through each entity E in graph
+        # find each direct RNG neighbor, add that as neighbor to E
+        # 
+
     def relative_neighborhood(self, w, k, format='dict'):
         """
         Builds a relative neighborhood graph from word `w` using the `k` nearest neighbors of `w`.
@@ -408,15 +414,29 @@ class RandomIndexing(DSM):
         else:
             vec = self[arg]
 
+        # should be:
+        # for every index vector
+        # 'and' the context vector with the index vector
+        # calculate distance
 
-        #anded_matrix = np.apply_along_axis(lambda x: x * np.logical_and(x, vec), 1, self.index_vectors.matrix.toarray())
-        #print(type(anded_matrix))
+        # is:
+        # for every index vector
+        # 'and' the index vector with the context vector
+        # calculate distance
 
-        #imatrix = IndexMatrix(sp.csr_matrix(anded_matrix), row2word = [], col2word = [])
+        print("bm:", np.count_nonzero(self.index_vectors.matrix.toarray()))
+
+        veca = vec.matrix.toarray()[0,:]
+
+        vecas = np.apply_along_axis(lambda x: veca * np.logical_and(x, veca), 1, self.index_vectors.matrix.toarray())
+
+        #print("am:", np.count_nonzero(anded_matrix))
+
+        imatrix = IndexMatrix(vecas, row2word=self.index_vectors.row2word, col2word=self.index_vectors.col2word)
 
         scores = []
-        for row in vec:
-            scores.append(sim_func(self.index_vectors, row).sort(key='sum', axis=0, ascending=False))
+        for row in vecas:
+            scores.append(sim_func(imatrix, row).sort(key='sum', axis=0, ascending=False))
 
         res = scores[0]
         for i in scores[1:]:

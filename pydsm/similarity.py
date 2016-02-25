@@ -24,6 +24,8 @@ def euclidean(matrix, vector, assure_consistency=False):
     inv_euc= 1/(1+matrix.subtract(vector).norm(axis=1))
     return inv_euc.sort(ascending=False)
 
+def dimcos(mat1, mat2):
+    pass    
 
 def cos(mat1, mat2, assure_consistency=False):
     """
