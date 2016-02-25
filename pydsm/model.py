@@ -414,34 +414,20 @@ class RandomIndexing(DSM):
         else:
             vec = self[arg]
 
-        # should be:
-        # for every index vector
-        # 'and' the context vector with the index vector
-        # calculate distance
 
-        # is:
-        # for every index vector
-        # 'and' the index vector with the context vector
-        # calculate distance
+        vec_array = vec.matrix.toarray()[0,:]
 
-        print("bm:", np.count_nonzero(self.index_vectors.matrix.toarray()))
+        # 'and' all index vectors with the argument vector
+        anded_indexes = np.apply_along_axis(lambda x: vec_array * np.logical_and(x, vec_array), 1, self.index_vectors.matrix.toarray())
+        anded_indexes_im = IndexMatrix(anded_indexes, row2word=self.index_vectors.row2word, col2word=self.index_vectors.col2word)
 
-        veca = vec.matrix.toarray()[0,:]
+        # compare 'and'ed index vectors to unchanged index ector
+        dists = []
+        for i, (anded_index, index_vector) in enumerate(zip(anded_indexes_im, self.index_vectors)):
+            dists.append((dist.cosine(anded_index.matrix.toarray()[0,:], index_vector.matrix.toarray()[0,:]), anded_indexes_im.row2word[i]))
+        dists.sort()
 
-        vecas = np.apply_along_axis(lambda x: veca * np.logical_and(x, veca), 1, self.index_vectors.matrix.toarray())
-
-        #print("am:", np.count_nonzero(anded_matrix))
-
-        imatrix = IndexMatrix(vecas, row2word=self.index_vectors.row2word, col2word=self.index_vectors.col2word)
-
-        scores = []
-        for row in vecas:
-            scores.append(sim_func(imatrix, row).sort(key='sum', axis=0, ascending=False))
-
-        res = scores[0]
-        for i in scores[1:]:
-            res = res.append(i, axis=1)
-        return res
+        return dists
 
 
     @timeit
