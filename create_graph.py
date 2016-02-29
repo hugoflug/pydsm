@@ -4,9 +4,12 @@ import queue
 from collections import defaultdict
 
 
+def nearest_index(model, word, neighbor):
+    return model.nearest_index_neighbors(model[word] + model[neighbor])[0][1]
+
 # TODO: if queue is empty, load next unvisited word from model into queue and restart
 
-def create_graph(model, root, save_file=None, save_every_nth_iteration=1000):
+def create_graph(model, root, save_file=None, save_every_nth_iteration=1000, label_function=None):
     g = nx.Graph()
     q = queue.Queue()
 
@@ -31,7 +34,9 @@ def create_graph(model, root, save_file=None, save_every_nth_iteration=1000):
 
         for neighbor, labels in rng[word].items():
             if word in potential_edges[neighbor]:
-                g.add_edge(word, neighbor, labels)
+                if label_function is not None:
+                    new_label = label_function(word, neighbor)
+                g.add_edge(word, neighbor, l=new_label)
             else:
                 potential_edges[word].append(neighbor)
             if neighbor not in visited:

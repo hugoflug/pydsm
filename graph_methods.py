@@ -14,10 +14,11 @@ def subgraph(g, root, max_depth):
         (node, depth) = q.get()
         
         if depth < max_depth:
-            for nbor in g[node]:
+            for nbor, labels in g[node].items():
                 if nbor not in visited:
                     sg.add_node(nbor)
-                    sg.add_edge(node, nbor)
+
+                    sg.add_edge(node, nbor, attr_dict=labels)
 
                     q.put((nbor, depth + 1))
                     visited.add(nbor)
