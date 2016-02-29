@@ -27,7 +27,7 @@ def create_graph(model, root, gpickle=None):
         if gpickle:
             if n % 100 == 0:
                 nx.write_gpickle(g, gpickle)
-                print("Saving graph to file:", gpickle, "(iteration:", n, ", nodes:", str(g.number_of_nodes()) + ")")
+                print("Saving graph to file:'" + gpickle + "' (iteration: " + str(n) + ", nodes: " +str(g.number_of_nodes()) + ")")
 
         for neighbor, labels in rng[word].items():
             if word in potential_edges[neighbor]:
