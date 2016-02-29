@@ -1,5 +1,5 @@
 import queue
-import networkx
+import networkx as nx
 
 def subgraph(g, root, max_depth):
     sg = nx.Graph()
@@ -12,14 +12,14 @@ def subgraph(g, root, max_depth):
     
     while not q.empty():
         (node, depth) = q.get()
-        visited.add(node)
         
-        if depth <= max_depth:
+        if depth < max_depth:
             for nbor in g[node]:
                 if nbor not in visited:
                     sg.add_node(nbor)
                     sg.add_edge(node, nbor)
 
                     q.put((nbor, depth + 1))
+                    visited.add(nbor)
                 
     return sg
