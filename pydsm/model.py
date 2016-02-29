@@ -430,7 +430,6 @@ class RandomIndexing(DSM):
         else:
             vec = self[arg]
 
-
         vec_array = vec.matrix.toarray()[0,:]
 
         # 'and' all index vectors with the argument vector
@@ -438,6 +437,7 @@ class RandomIndexing(DSM):
         anded_indexes_im = IndexMatrix(anded_indexes, row2word=self.index_vectors.row2word, col2word=self.index_vectors.col2word)
 
         # compare 'and'ed index vectors to unchanged index ector
+        # this is SLOW
         dists = []
         for i, (anded_index, index_vector) in enumerate(zip(anded_indexes_im, self.index_vectors)):
             dists.append((1 - dist.cosine(anded_index.matrix.toarray()[0,:], index_vector.matrix.toarray()[0,:]), anded_indexes_im.row2word[i]))
