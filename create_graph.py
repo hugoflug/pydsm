@@ -6,7 +6,7 @@ from collections import defaultdict
 
 # TODO: if queue is empty, load next unvisited word from model into queue and restart
 
-def create_graph(model, root, gpickle=None):
+def create_graph(model, root, save_file=None, save_every_nth_iteration=1000):
     g = nx.Graph()
     q = queue.Queue()
 
@@ -24,10 +24,10 @@ def create_graph(model, root, gpickle=None):
 
         rng = model.relative_neighborhood(word, 20, format='networkx')
         
-        if gpickle:
-            if n % 100 == 0:
-                nx.write_gpickle(g, gpickle)
-                print("Saving graph to file:'" + gpickle + "' (iteration: " + str(n) + ", nodes: " +str(g.number_of_nodes()) + ")")
+        if save_file:
+            if n % save_every_nth_iteration == 0:
+                nx.write_gpickle(g, save_file)
+                print("Saving graph to file: '" + save_file + "' (iteration: " + str(n) + ", nodes: " + str(g.number_of_nodes()) + ")")
 
         for neighbor, labels in rng[word].items():
             if word in potential_edges[neighbor]:
