@@ -7,6 +7,9 @@ import bz2
 import hashlib
 import scipy.spatial.distance as dist
 import scipy.sparse as sp
+import networkx as nx
+import sys
+import os
 
 import numpy as np
 
@@ -40,6 +43,7 @@ class DSM(metaclass=abc.ABCMeta):
         else:
             if corpus is not None:
                 print('Building matrix from corpus with config: {}'.format(self.config), end="")
+
                 colloc_dict = self.build(_vocabularize(self, corpus))
                 if isinstance(colloc_dict, dict):
                     if 'higher_threshold' in self.config:
@@ -227,11 +231,15 @@ class DSM(metaclass=abc.ABCMeta):
             res = res.append(i, axis=1)
         return res
 
-    def build_graph(self):
-        pass
-        # go through each entity E in graph
-        # find each direct RNG neighbor, add that as neighbor to E
-        # 
+    def build_graph(self, k=10):
+        g = nx.Graph()
+        for vec in self.matrix:
+            rng = self.relative_neighborhood(vec, k, format='networkx')
+
+            root = vec.row2word[0]
+            print(rng[root])
+            for neighbor, labels in rng[root].items():
+                g.add_edge(root, neighbor, labels)
 
     def relative_neighborhood(self, w, k, format='dict'):
         """
@@ -361,6 +369,7 @@ class RandomIndexing(DSM):
                  vocabulary=None,
                  dimensionality=2000,
                  num_indices=8,
+                 stop_list=None,
                  **kwargs):
         """
         Builds a Random Indexing DSM from text-iterator [1].
@@ -380,10 +389,16 @@ class RandomIndexing(DSM):
 
         [1] Sahlgren, Magnus. "An introduction to random indexing." (2005).
         """
+
+        if stop_list == None:
+            __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+            stop_list = set(line.strip() for line in open(os.path.join(__location__, 'stop_words.txt')))
+
         if config is None:
             config = {'dimensionality': dimensionality,
                       'num_indices': num_indices,
-                      'window_size': window_size}
+                      'window_size': window_size,
+                      'stop_list': stop_list}
         else:
             if 'dimensionality' not in config:
                 config['dimensionality'] = dimensionality
@@ -391,6 +406,8 @@ class RandomIndexing(DSM):
                 config['num_indices'] = num_indices
             if 'window_size' not in config:
                 config['window_size'] = window_size
+            if 'stop_list' not in config:
+                config['stop_list'] = stop_list
 
         config = dict(config, **kwargs)
 
@@ -431,7 +448,6 @@ class RandomIndexing(DSM):
 
     @timeit
     def build(self, text):
-
         """
         Builds the co-occurrence dict from text.
         The columns are encoded from 0 to dimensionality-1.

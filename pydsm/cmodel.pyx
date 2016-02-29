@@ -12,7 +12,7 @@ def filter_word_stream(self, sentence):
     filtered = []
     for w in sentence:
         self.vocabulary[w] += 1
-        if self.vocabulary[w] > self.config.get('lower_threshold', 0) or w not in stop_list:
+        if self.vocabulary[w] > self.config.get('lower_threshold', 0) and w not in stop_list:
             filtered.append(w)
     return filtered
 
