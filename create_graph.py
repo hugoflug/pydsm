@@ -4,8 +4,9 @@ import queue
 from collections import defaultdict
 
 
-def nearest_index(model, word, neighbor):
-    return model.nearest_index_neighbors(model[word] + model[neighbor])[0][1]
+def nearest_indices(model, word, neighbor, n=1):
+    nin = model.nearest_index_neighbors(model[word] + model[neighbor])
+    return ", ".join(nin[i][1] for i in range(n))
 
 # TODO: if queue is empty, load next unvisited word from model into queue and restart
 
