@@ -445,7 +445,7 @@ class RandomIndexing(DSM):
 
             # cosine distance to all-zero vector is undefined, we define it as 0
             if np.linalg.norm(anded_index_array) == 0:
-                dists.append(0.0, word)
+                dists.append((0.0, word))
             else:
                 index_vector_array = index_vector.matrix.toarray()[0,:]
                 dists.append((1 - dist.cosine(anded_index_array, index_vector_array), word))
